@@ -1,0 +1,30 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-debian:latest-run
+
+RUN install_packages \
+ atomicparsley \
+ ffmpeg \
+ git \
+ lftp \
+ liblwp-protocol-https-perl \
+ libmojolicious-perl \
+ libxml-libxml-perl 
+WORKDIR /root
+
+ADD dot.get_iplayer /root/.get_iplayer
+ADD https://api.github.com/repos/get-iplayer/get_iplayer/git/refs/heads/master version.json
+RUN git clone https://github.com/get-iplayer/get_iplayer.git \
+   && ls -l \
+   && cp get_iplayer/get_iplayer /usr/bin \
+   && rm -rf get_iplayer
+RUN curl ftp://home.tonyholroyd.co.uk/PiUploads/download_history -o .get_iplayer/download_history || :
+VOLUME /root/.get_iplayer
+
+ADD entrypoint.sh /root/entrypoint.sh
+ADD lftp.cmds.tpl /root/lftp.cmds.tpl
+RUN chmod +x /root/entrypoint.sh 
+
+CMD bash -c /root/entrypoint.sh
+
+
+
+# CMD /bin/sleep 3600

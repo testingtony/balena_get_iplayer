@@ -1,0 +1,10 @@
+version: '2'
+services:
+  get_iplayer:
+    build: ./get_iplayer
+    volumes:
+      - data:/root/.get_iplayer
+    privileged: true
+
+volumes:
+  data:
